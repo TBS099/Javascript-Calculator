@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="math.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="./Calculator.css" />
+    <link rel="stylesheet" href="./bootstrap-4.0.0-dist/css/bootstrap.css" />
+    <title>Calculator</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="display">
+        <div class="space">
+          <h4 id="screenDisplay" class="text">0</h4>
+        </div>
+        <div class="row">
+          <h5 id="results" class="result-text col-6">0</h5>
+          <button class="del">Del</button>
+        </div>
+      </div>
+
+      <div class="container buttonbox">
+        <button class="color clear" value="C">C</button>
+        <button class="color parenthesis" value="()">()</button>
+        <button class="color percentage" value="%">%</button>
+        <button class="color operator" value="/">/</button>
+        <button class="number" value="7">7</button>
+        <button class="number" value="8">8</button>
+        <button class="number" value="9">9</button>
+        <button class="color operator" value="x">x</button>
+        <button class="number" value="4">4</button>
+        <button class="number" value="5">5</button>
+        <button class="number" value="6">6</button>
+        <button class="color operator" value="-">-</button>
+        <button class="number" value="1">1</button>
+        <button class="number" value="2">2</button>
+        <button class="number" value="3">3</button>
+        <button class="color operator" value="+">+</button>
+        <button class="number" value="0">0</button>
+        <button class="color decimal" value=".">.</button>
+        <button class="equals" value="=">=</button>
+      </div>
+    </div>
+  </body>
+  <footer>
+    <script>
+      screenDisplay = document.getElementById("screenDisplay");
+      results = document.getElementById("results");
+      numButtons = document.querySelectorAll(".number");
+      operators = document.querySelectorAll(".operator");
+      equals = document.querySelector(".equals");
+      parenthesis = document.querySelector(".parenthesis");
+      percentage = document.querySelector(".percentage");
+      clear = document.querySelector(".clear");
+      decimal = document.querySelector(".decimal");
+      deleteChar = document.querySelector(".del");
+      let history = [];
+      let innerCalc = "";
+      let num1 = 0;
+      let num2 = 0;
+      let result = 0;
+      let sign = "";
+
+      //NaN Check
+      const NaNCheck = () => {
+        console.log("num1:", num1);
+        console.log("innerCalc:", innerCalc);
+        if (isNaN(num1)) {
+          if (isNaN(innerCalc)) {
+            num1 = 0;
+            innerCalc = "";
+          } else {
+            num1 = 0;
+          }
+        }
+      };
+
+      //Number Input
+      numButtons.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          NaNCheck();
+          numberInput(this.value);
+        });
+      });
+
+      const numberInput = (number) => {
+        const screenExp = screenDisplay.innerHTML;
+
+        if (sign) {
+          num2 = parseFloat(num2 + number);
+          screenDisplay.innerHTML = (screenExp + number).toString();
+          innerCalc = innerCalc + number;
+        } else {
+          if (isNaN(num1)) {
+            num1 = 0;
+            innerCalc = 0;
+            num1 = parseFloat(num1 + number);
+            screenDisplay.innerHTML = parseFloat(num1).toString();
+            innerCalc = innerCalc + number;
+          } else {
+            num1 = parseFloat(num1 + number);
+            screenDisplay.innerHTML = parseFloat(num1).toString();
+            innerCalc = innerCalc + number;
+          }
+        }
+        console.log(innerCalc);
+        console.log(num1);
+      };
+
+      //Operator Input
+      operators.forEach((operator) => {
+        operator.addEventListener("click", function () {
+          NaNCheck();
+          operatorInput(this.value);
+        });
+      });
+
+      const operatorInput = (signs) => {
+        const screenExp = screenDisplay.innerHTML;
+
+        if (signs === "+") {
+          sign = "+";
+          screenDisplay.innerHTML = screenExp + sign;
+          innerCalc = innerCalc + sign;
+        } else if (signs === "-") {
+          if (num1) {
+            sign = "-";
+            screenDisplay.innerHTML = screenExp + sign;
+            innerCalc = innerCalc + sign;
+          } else {
+            num1 = signs + num1;
+            screenDisplay.innerHTML = num1;
+            innerCalc = num1;
+          }
+        } else if (signs === "x" || signs === "*") {
+          sign = "*";
+          screenDisplay.innerHTML = screenExp + signs;
+          innerCalc = innerCalc + sign;
+        } else {
+          sign = "/";
+          screenDisplay.innerHTML = screenExp + sign;
+          innerCalc = innerCalc + sign;
+        }
+      };
+
+      //Equals to Click
+      equals.addEventListener("click", function () {
+        equalsto();
+      });
+
+      const equalsto = () => {
+        results.innerHTML = math.evaluate(innerCalc);
+      };
+
+      //Clear Input
+      clear.addEventListener("click", function () {
+        clearData();
+      });
+
+      const clearData = () => {
+        screenDisplay.innerHTML = 0;
+        results.innerHTML = 0;
+        innerCalc = "";
+        num1 = 0;
+        num2 = 0;
+        result = 0;
+        sign = "";
+      };
+
+      //Decimal Input
+      decimal.addEventListener("click", function () {
+        NaNCheck();
+        inputDecimal(this.value);
+      });
+
+      inputDecimal = (decimal) => {
+        const screenExp = screenDisplay.innerHTML;
+
+        num1 = num1 + decimal;
+        screenDisplay.innerHTML = screenExp + decimal;
+        innerCalc = innerCalc + decimal;
+      };
+
+      //Parenthesis Input
+      parenthesis.addEventListener("click", function () {
+        NaNCheck();
+        brackets();
+      });
+
+      brackets = () => {
+        const screenExp = screenDisplay.innerHTML;
+
+        if (innerCalc.includes("(")) {
+          screenDisplay.innerHTML = screenExp + ")";
+          innerCalc = innerCalc + ")";
+        } else {
+          screenDisplay.innerHTML = screenExp + "(";
+          innerCalc = innerCalc + "(";
+        }
+      };
+
+      //Keyboard Parenthesis Input
+      keyboardBrackets = (key) => {
+        if (key === "(") {
+          screenDisplay.innerHTML = screenExp + "(";
+          innerCalc = innerCalc + "(";
+        } else {
+          screenDisplay.innerHTML = screenExp + ")";
+          innerCalc = innerCalc + ")";
+        }
+      };
+
+      //Percentage Input
+      percentage.addEventListener("click", function () {
+        NaNCheck();
+        percentage();
+      });
+
+      percentage = () => {
+        const screenExp = screenDisplay.innerHTML;
+
+        screenDisplay.innerHTML = screenExp + "/100";
+        innerCalc = innerCalc + "/100";
+      };
+
+      //Character Delete using Backspace on Keyboard and del button
+      deleteChar.addEventListener("click", function () {
+        charDelete();
+      });
+
+      charDelete = () => {
+        const screenExp = screenDisplay.innerHTML;
+        num1 = parseInt(num1.toString().slice(0, -1));
+        screenDisplay.innerHTML = screenExp.slice(0, -1);
+        innerCalc = innerCalc.slice(0, -1);
+      };
+
+      //Check keyboard input
+      document.addEventListener("keydown", function (event) {
+        let key = event.key;
+        console.log(key);
+
+        if (key === "Enter") {
+          equalsto();
+        } else if (key === "+" || key === "-" || key === "*" || key === "/") {
+          NaNCheck();
+          operatorInput(key);
+        } else if (key === "%") {
+          NaNCheck();
+          percentage();
+        } else if (key === ".") {
+          inputDecimal(key);
+        } else if (key === "Backspace") {
+          charDelete();
+        } else if (key === "(" || key === ")") {
+          NaNCheck();
+          keyboardBrackets(key);
+        } else if (Number.isInteger(parseInt(key))) {
+          NaNCheck();
+          numberInput(key);
+        }
+      });
+    </script>
+  </footer>
+</html>
